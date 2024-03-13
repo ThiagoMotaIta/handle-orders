@@ -82,8 +82,8 @@ class OrderController extends Controller
 
         if(Order::where('id', $id)->exists()) {
             $orderCancelled = Order::find($id);
-            orderCancelled->status = 'cancelled';
-            orderCancelled->save();
+            $orderCancelled->status = 'cancelled';
+            $orderCancelled->save();
 
             return response()->json([
               "message" => "Order Cancelled!"
