@@ -39,23 +39,34 @@ class OrderController extends Controller
     public function ordersFromJson()
     {
 
-        $objects = Storage::json('/public/orders.json');
+        // If the orders table is not empty
+        $orders = Order::get();
+        if ($orders->count() > 0){
+            return response()->json([
+                "message" => "JSON already read!",
+            ], 200);
+        } else {
+            // Readind the JSON File
+            $json = file_get_contents('orders.json'); 
+            $objects = json_decode($json,true);
 
-        foreach ($objects as $obj) {
-            $order = new Order;
-            
-            $order->created_at = $obj['date'];
-            $order->customer = $obj['customer'];
-            $order->address1 = $obj['address1'];
-            $order->city = $obj['city'];
-            $order->postcode = $obj['postcode'];
-            $order->country = $obj['country'];
-            $order->amount = $obj['amount'];
-            $order->status = $obj['status'];
-            $order->deleted = $obj['deleted'];
-            $order->updated_at = $obj['last_modified'];
+            // Inserting each json object in database
+            foreach ($objects as $obj) {
+                $order = new Order;
+                
+                $order->created_at = $obj['date'];
+                $order->customer = $obj['customer'];
+                $order->address1 = $obj['address1'];
+                $order->city = $obj['city'];
+                $order->postcode = $obj['postcode'];
+                $order->country = $obj['country'];
+                $order->amount = $obj['amount'];
+                $order->status = $obj['status'];
+                $order->deleted = $obj['deleted'];
+                $order->updated_at = $obj['last_modified'];
 
-            $order->save();
+                $order->save();
+            }
         }
 
     }
@@ -71,11 +82,11 @@ class OrderController extends Controller
 
         if(Order::where('id', $id)->exists()) {
             $orderRemoved = Order::find($id);
-            $orderRemoved->status = 'canceled';
+            $orderRemoved->status = 'cancelled';
             $orderRemoved->save();
 
             return response()->json([
-              "message" => "Order Canceled!"
+              "message" => "Order Cancelled!"
             ], 202);
           } else {
             return response()->json([
@@ -94,27 +105,24 @@ class OrderController extends Controller
     public function searchOrder(Request $request)
     {
 
-        // Get Orders by customer search
-        if (Order::where('customer', 'like', $request->customer)->exists()) {
+        if (Order::where('customer', 'like', '%'.$request->customer.'%')->exists()) {
+            $orders = Order::where('customer', 'like', '%'.$request->customer.'%')->get();
 
-            $orders = Order::where('customer', 'like', $request->customer)->get();
-
-            foreach ($orders as $order){
-                $listOrder = Order::find($order->id);
-
-                // Order list
-                $orderListBySearch[] = $listOrder;
+            if ($orders->count() > 0){
+                return response()->json([
+                    "message" => "Orders found!",
+                    "orders" => $orders,
+                ], 200);
+            } else {
+                return response()->json([
+                    "message" => "There is no Orders for this customer!",
+                ], 200);
             }
 
-            return response()->json([
-                "message" => "Order(s) found!",
-                "orderList" => $orderListBySearch,
-            ], 200);
         } else {
             return response()->json([
-                "message" => "There is no Order for this customer."
-            ], 200);
-
+                    "message" => "There is no Orders yet!",
+                ], 200);   
         }
 
     }
