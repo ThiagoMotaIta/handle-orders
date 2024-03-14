@@ -12,9 +12,9 @@ Welcome to **Readme of Handle Orders Project**!
 
 ## About the Stacks 📜
 
-For this challenge, i decided to use Laravel v9.52, and PHP v8.0.11 for **BACK-END**;
-For **FRONT-END**, Bootstrap v5.3.2, Ajax and JQuery + React for Login and Register pages;
-For **DATABASE**, MySQL (MariaDB);
+- For this challenge, i decided to use Laravel v9.52, and PHP v8.0.11 for **BACK-END**;
+- For **FRONT-END**, Bootstrap v5.3.2, Ajax and JQuery + React for Login and Register pages;
+- For **DATABASE**, MySQL (MariaDB);
 
 ## Technical Issues 🦄
 
